@@ -1,0 +1,67 @@
+#!/usr/bin/python
+
+from ftplib import FTP
+import os, sys, os.path
+import argparse
+
+def log_this(s_log):
+    print s_log
+
+def is_file(ftp, filename):
+    try:
+        ftp.voidcmd('TYPE I')
+        size = ftp.size(filename)
+    except:
+        size = -1
+    log_this('Server current folder: ' + ftp.pwd())
+    log_this('File size of "' + filename + '": ' + str(size))
+    return size >= 0
+
+def download_folder(directory):
+    log_this('Changing server directory: ' + directory)
+    ftp.cwd(directory)
+
+    filenames = ftp.nlst()
+    log_this('Accessing files')
+    log_this(filenames)
+
+    for filename in filenames:
+        if (filename != '.') and (filename != '..'):
+            if is_file(ftp, filename):
+                local_filename = os.path.join(os.getcwd(), filename)
+                log_this('Saving file "' + filename + '" to "' + local_filename + '"')
+                file = open(local_filename, 'wb')
+                ftp.retrbinary('RETR '+ filename, file.write)
+                file.close()    
+            else:
+                if not os.path.exists(filename):
+                    log_this('Creating folder: ' + filename)
+                    os.makedirs(filename)
+                log_this('Changing local directory: ' + filename)
+                os.chdir(filename)
+                download_folder(filename)
+
+    log_this('Changing local and server directory to the parent directory of: ' + directory)
+    os.chdir('..')                
+    ftp.cwd('..')
+
+
+parser = argparse.ArgumentParser(prog='Website Backup', description='Backup website using FTP')
+parser.add_argument('-s', '--server', help='Server url', required=True)
+parser.add_argument('-u', '--user', help='Login username', required=True)
+parser.add_argument('-p', '--password', help='Login password', required=True)
+parser.add_argument('-d', '--local_dir', help='Local directory path', required=True)
+parser.add_argument('-D', '--server_dir', help='Server directory path', default='/')
+config = parser.parse_args()
+
+try:
+	ftp = FTP(config.server)
+	ftp.login(config.user, config.password)
+	log_this('Login successful')
+	os.chdir(config.local_dir)
+	download_folder(config.server_dir)
+
+	ftp.quit()
+	log_this('Server login failed')
+except Exception, e:
+	print str(e)
