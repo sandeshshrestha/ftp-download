@@ -5,7 +5,8 @@ import os, sys, os.path
 import argparse
 
 def log_this(s_log):
-    print s_log
+	if (config.log):
+		print s_log
 
 def is_file(ftp, filename):
     try:
@@ -52,16 +53,18 @@ parser.add_argument('-u', '--user', help='Login username', required=True)
 parser.add_argument('-p', '--password', help='Login password', required=True)
 parser.add_argument('-d', '--local_dir', help='Local directory path', required=True)
 parser.add_argument('-D', '--server_dir', help='Server directory path', default='/')
+parser.add_argument('-l', '--log', help='Show process log', action='store_true')
 config = parser.parse_args()
 
 try:
 	ftp = FTP(config.server)
 	ftp.login(config.user, config.password)
 	log_this('Login successful')
+	
 	os.chdir(config.local_dir)
 	download_folder(config.server_dir)
-
 	ftp.quit()
-	log_this('Server login failed')
+	
+	print 'Backup successful'
 except Exception, e:
 	print str(e)
