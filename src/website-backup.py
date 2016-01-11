@@ -4,6 +4,11 @@ from ftplib import FTP
 import os, sys, os.path
 import argparse
 
+# Python 3: raw_input() was renamed to input()
+# Source: http://stackoverflow.com/a/7321970/887539
+try: input = raw_input
+except NameError: pass
+
 def log_this(s_log):
 	if (config.log):
 		print s_log
@@ -50,7 +55,7 @@ def download_folder(directory):
 parser = argparse.ArgumentParser(prog='Website Backup', description='Backup website using FTP')
 parser.add_argument('-s', '--server', help='Server url', required=True)
 parser.add_argument('-u', '--user', help='Login username', required=True)
-parser.add_argument('-p', '--password', help='Login password', required=True)
+parser.add_argument('-p', '--password', help='Login password')
 parser.add_argument('-d', '--local_dir', help='Local directory path', required=True)
 parser.add_argument('-D', '--server_dir', help='Server directory path', default='/')
 parser.add_argument('-l', '--log', help='Show process log', action='store_true')
@@ -58,6 +63,10 @@ config = parser.parse_args()
 
 try:
 	ftp = FTP(config.server)
+	# Ask for password if not provided by CLI
+	if config.password is None:
+		config.password = input('Please enter FTP password: ')
+	
 	ftp.login(config.user, config.password)
 	log_this('Login successful')
 	
