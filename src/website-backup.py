@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 from ftplib import FTP
 import os, sys, os.path
