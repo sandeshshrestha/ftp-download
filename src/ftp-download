@@ -4,10 +4,6 @@ from ftplib import FTP
 import os, sys, os.path
 import argparse
 
-# Python 3: raw_input() was renamed to input()
-# Source: http://stackoverflow.com/a/7321970/887539
-try: input = raw_input
-except NameError: pass
 
 def log_this(s_log):
   if (config.verbose):
