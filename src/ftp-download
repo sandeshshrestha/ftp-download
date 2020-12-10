@@ -66,8 +66,7 @@ try:
   if config.password is None:
     config.password = input('Please enter FTP password: ')
 
-  ftp = FTP(config.server)
-  ftp.login(config.user, config.password)
+  ftp = FTP(config.server, config.user, config.password)
   log_this('Login successful')
 
   os.chdir(config.local_dir)
