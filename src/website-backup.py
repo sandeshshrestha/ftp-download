@@ -10,46 +10,46 @@ try: input = raw_input
 except NameError: pass
 
 def log_this(s_log):
-	if (config.log):
-		print s_log
+  if (config.log):
+    print s_log
 
 def is_file(ftp, filename):
-    try:
-        ftp.voidcmd('TYPE I')
-        size = ftp.size(filename)
-    except:
-        size = -1
-    log_this('Server current folder: ' + ftp.pwd())
-    log_this('File size of "' + filename + '": ' + str(size))
-    return size >= 0
+  try:
+    ftp.voidcmd('TYPE I')
+    size = ftp.size(filename)
+  except:
+    size = -1
+  log_this('Server current folder: ' + ftp.pwd())
+  log_this('File size of "' + filename + '": ' + str(size))
+  return size >= 0
 
 def download_folder(directory):
-    log_this('Changing server directory: ' + directory)
-    ftp.cwd(directory)
+  log_this('Changing server directory: ' + directory)
+  ftp.cwd(directory)
 
-    filenames = ftp.nlst()
-    log_this('Accessing files')
-    log_this(filenames)
+  filenames = ftp.nlst()
+  log_this('Accessing files')
+  log_this(filenames)
 
-    for filename in filenames:
-        if (filename != '.') and (filename != '..'):
-            if is_file(ftp, filename):
-                local_filename = os.path.join(os.getcwd(), filename)
-                log_this('Saving file "' + filename + '" to "' + local_filename + '"')
-                file = open(local_filename, 'wb')
-                ftp.retrbinary('RETR '+ filename, file.write)
-                file.close()    
-            else:
-                if not os.path.exists(filename):
-                    log_this('Creating folder: ' + filename)
-                    os.makedirs(filename)
-                log_this('Changing local directory: ' + filename)
-                os.chdir(filename)
-                download_folder(filename)
+  for filename in filenames:
+    if (filename != '.') and (filename != '..'):
+      if is_file(ftp, filename):
+        local_filename = os.path.join(os.getcwd(), filename)
+        log_this('Saving file "' + filename + '" to "' + local_filename + '"')
+        file = open(local_filename, 'wb')
+        ftp.retrbinary('RETR '+ filename, file.write)
+        file.close()
+      else:
+        if not os.path.exists(filename):
+          log_this('Creating folder: ' + filename)
+          os.makedirs(filename)
+        log_this('Changing local directory: ' + filename)
+        os.chdir(filename)
+        download_folder(filename)
 
-    log_this('Changing local and server directory to the parent directory of: ' + directory)
-    os.chdir('..')                
-    ftp.cwd('..')
+  log_this('Changing local and server directory to the parent directory of: ' + directory)
+  os.chdir('..')
+  ftp.cwd('..')
 
 
 parser = argparse.ArgumentParser(prog='Website Backup', description='Backup website using FTP')
@@ -62,18 +62,18 @@ parser.add_argument('-l', '--log', help='Show process log', action='store_true')
 config = parser.parse_args()
 
 try:
-	ftp = FTP(config.server)
-	# Ask for password if not provided by CLI
-	if config.password is None:
-		config.password = input('Please enter FTP password: ')
-	
-	ftp.login(config.user, config.password)
-	log_this('Login successful')
-	
-	os.chdir(config.local_dir)
-	download_folder(config.server_dir)
-	ftp.quit()
-	
-	print 'Backup successful'
+  ftp = FTP(config.server)
+  # Ask for password if not provided by CLI
+  if config.password is None:
+    config.password = input('Please enter FTP password: ')
+
+  ftp.login(config.user, config.password)
+  log_this('Login successful')
+
+  os.chdir(config.local_dir)
+  download_folder(config.server_dir)
+  ftp.quit()
+
+  print 'Backup successful'
 except Exception, e:
-	print str(e)
+  print str(e)
