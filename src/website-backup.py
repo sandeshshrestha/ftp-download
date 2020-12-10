@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
 from ftplib import FTP
 import os, sys, os.path
@@ -11,7 +11,7 @@ except NameError: pass
 
 def log_this(s_log):
   if (config.log):
-    print s_log
+    print(s_log)
 
 def is_file(ftp, filename):
   try:
@@ -62,11 +62,11 @@ parser.add_argument('-l', '--log', help='Show process log', action='store_true')
 config = parser.parse_args()
 
 try:
-  ftp = FTP(config.server)
   # Ask for password if not provided by CLI
   if config.password is None:
     config.password = input('Please enter FTP password: ')
 
+  ftp = FTP(config.server)
   ftp.login(config.user, config.password)
   log_this('Login successful')
 
@@ -74,6 +74,6 @@ try:
   download_folder(config.server_dir)
   ftp.quit()
 
-  print 'Backup successful'
-except Exception, e:
-  print str(e)
+  print('Backup successful')
+except Exception as e:
+  print(str(e))
