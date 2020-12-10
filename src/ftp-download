@@ -10,7 +10,7 @@ try: input = raw_input
 except NameError: pass
 
 def log_this(s_log):
-  if (config.log):
+  if (config.verbose):
     print(s_log)
 
 def is_file(ftp, filename):
@@ -58,7 +58,7 @@ parser.add_argument('-u', '--user', help='Login username', required=True)
 parser.add_argument('-p', '--password', help='Login password')
 parser.add_argument('-d', '--local_dir', help='Local directory path', required=True)
 parser.add_argument('-D', '--server_dir', help='Server directory path', default='/')
-parser.add_argument('-l', '--log', help='Show process log', action='store_true')
+parser.add_argument('-v', '--verbose', help='Show process log', action='store_true')
 config = parser.parse_args()
 
 try:
