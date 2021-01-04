@@ -1,4 +1,4 @@
-# Python website backup
+# FTP files download
 
 Downloads all the files and folders using FTP.
 
